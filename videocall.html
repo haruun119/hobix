@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Session & Whiteboard | HobiX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src='https://meet.jit.si/external_api.js'></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a1f;
+            --accent: #00f2fe;
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --danger: #f5576c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 0.8rem 2rem;
+            background: rgba(20, 20, 50, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .main-call-area {
+            flex: 1;
+            display: flex;
+            padding: 1rem;
+            gap: 1rem;
+            height: calc(100vh - 65px);
+        }
+
+        .video-box {
+            flex: 1;
+            background: #141432;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        #meet-container { width: 100%; height: 100%; }
+
+        /* Side Panel (Whiteboard & Chat) */
+        .side-panel {
+            width: 380px;
+            background: rgba(20, 20, 50, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .tab-headers {
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: #a0a0c0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+            background: rgba(0, 242, 254, 0.05);
+        }
+
+        .tab-content { flex: 1; padding: 1rem; display: none; flex-direction: column; }
+        .tab-content.active { display: flex; }
+
+        /* Whiteboard Controls */
+        #whiteboard-canvas {
+            background: #ffffff;
+            border-radius: 12px;
+            cursor: crosshair;
+            width: 100%;
+            height: 320px;
+            touch-action: none;
+        }
+
+        .wb-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 12px;
+        }
+
+        .wb-controls input[type="color"] { border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; background: transparent; }
+        .wb-btn { background: var(--accent); color: #000; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="dashboard.html" style="color: #fff; text-decoration: none; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 20px; font-size: 0.85rem;"><i class="fas fa-arrow-left"></i> Exit</a>
+            <h3 style="font-size: 1.05rem;">🎸 HobiX Live Exchange & Whiteboard</h3>
+        </div>
+        <div style="background: rgba(0, 242, 254, 0.15); color: var(--accent); padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+            🔴 HD Call & Board Connected
+        </div>
+    </header>
+
+    <div class="main-call-area">
+        <div class="video-box">
+            <div id="meet-container"></div>
+        </div>
+
+        <aside class="side-panel">
+            <div class="tab-headers">
+                <button class="tab-btn active" onclick="switchTab('wb')"><i class="fas fa-paint-brush"></i> Whiteboard</button>
+                <button class="tab-btn" onclick="switchTab('notes')"><i class="fas fa-sticky-note"></i> Notes</button>
+            </div>
+
+            <!-- TAB 1: WHITEBOARD -->
+            <div class="tab-content active" id="tab-wb">
+                <p style="font-size: 0.8rem; color: #a0a0c0; margin-bottom: 8px;">Draw chord charts, formulas, or diagrams live:</p>
+                <canvas id="whiteboard-canvas"></canvas>
+                <div class="wb-controls">
+                    <label style="font-size: 0.8rem;">Color:</label>
+                    <input type="color" id="wb-color" value="#000000">
+                    <button class="wb-btn" onclick="clearCanvas()"><i class="fas fa-trash"></i> Clear</button>
+                </div>
+            </div>
+
+            <!-- TAB 2: NOTES -->
+            <div class="tab-content" id="tab-notes">
+                <p style="font-size: 0.8rem; color: #a0a0c0; margin-bottom: 8px;">Collaborative session notes:</p>
+                <textarea style="flex:1; width:100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; padding: 12px; outline: none; resize: none;" placeholder="Type chords, steps, or homework here..."></textarea>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Tab Switcher
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            if(tab === 'wb') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('tab-wb').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('tab-notes').classList.add('active');
+            }
+        }
+
+        // WebRTC Video Init
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('hobix_current_user')) || { firstName: "Guest User" };
+            const options = {
+                roomName: 'HobiX_Global_Skill_Exchange_Room',
+                width: '100%',
+                height: '100%',
+                parentNode: document.querySelector('#meet-container'),
+                userInfo: { displayName: user.firstName },
+                interfaceConfigOverwrite: { SHOW_JITSI_WATERMARK: false }
+            };
+            new JitsiMeetExternalAPI('meet.jit.si', options);
+            initWhiteboard();
+        });
+
+        // Interactive Canvas Whiteboard Logic
+        let canvas, ctx, drawing = false;
+
+        function initWhiteboard() {
+            canvas = document.getElementById('whiteboard-canvas');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            ctx = canvas.getContext('2d');
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDraw);
+            canvas.addEventListener('mouseleave', stopDraw);
+        }
+
+        function startDraw(e) { drawing = true; draw(e); }
+        function stopDraw() { drawing = false; ctx.beginPath(); }
+        function draw(e) {
+            if(!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.strokeStyle = document.getElementById('wb-color').value;
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        }
+
+        function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    </script>
+</body>
+</html>

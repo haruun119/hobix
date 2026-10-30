@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - HobiX Global Skill Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #00f2fe;
+            --bg-dark: #0a0a1f;
+            --card-bg: rgba(15, 15, 35, 0.95);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #43e97b;
+            --pink: #f5576c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        /* Force page scrolling on all screen sizes */
+        html, body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-light); 
+            min-height: 100vh;
+            overflow-y: auto !important; 
+        }
+
+        body {
+            padding: 30px 15px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .back-home { 
+            align-self: flex-start;
+            margin-bottom: 15px;
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 0.85rem; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--card-border); 
+            transition: all 0.3s; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .back-home:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        .signup-card {
+            background: var(--card-bg); 
+            border: 1px solid var(--card-border);
+            border-radius: 20px; 
+            padding: 25px 30px; 
+            width: 100%; 
+            max-width: 600px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6), 0 0 50px rgba(0, 242, 254, 0.1);
+        }
+
+        .brand-header { text-align: center; margin-bottom: 12px; }
+        .brand-header i { font-size: 2.2rem; background: linear-gradient(135deg, var(--accent), #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-header h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: -4px; }
+        .subtitle { color: var(--text-muted); font-size: 0.82rem; }
+
+        .reward-banner { background: rgba(67, 233, 123, 0.12); border: 1px solid var(--success); border-radius: 8px; padding: 6px 12px; margin: 12px 0 18px; text-align: center; font-size: 0.8rem; color: var(--success); font-weight: 600; }
+
+        /* Compact Grid */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+
+        .form-group { margin-bottom: 0; }
+        .form-label { display: block; margin-bottom: 4px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .input-box, .select-box { 
+            width: 100%; 
+            background: rgba(0,0,0,0.5); 
+            border: 1px solid var(--card-border); 
+            border-radius: 8px; 
+            padding: 9px 12px; 
+            color: #fff; 
+            font-size: 0.88rem; 
+            outline: none; 
+            transition: all 0.3s;
+        }
+
+        .select-box { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300f2fe'%3E%3Cpath d='M12 15l-5-5h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 16px; padding-right: 30px; }
+        .select-box option { background: #0f1026; color: #fff; padding: 8px; }
+
+        .input-box:focus, .select-box:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(0, 242, 254, 0.25); }
+
+        .custom-skill-input { display: none; margin-top: 6px; }
+        .custom-skill-input.show { display: block; }
+
+        /* Big Action Buttons */
+        .btn-submit { 
+            width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; 
+            border: none; cursor: pointer; transition: all 0.3s; 
+            background: linear-gradient(135deg, #00f2fe, #4facfe); 
+            color: #000; margin-top: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 242, 254, 0.5); }
+
+        .auth-footer {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid var(--card-border);
+            text-align: center;
+        }
+
+        .btn-login-link {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--accent);
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 6px;
+            transition: all 0.2s;
+        }
+        .btn-login-link:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .toast { position: fixed; top: 20px; right: 20px; background: #0f1026; border-left: 4px solid var(--success); padding: 12px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2000; transform: translateX(400px); transition: transform 0.4s ease; color: #fff; font-size: 0.85rem; }
+        .toast.show { transform: translateX(0); }
+        .toast.error { border-left-color: var(--pink); }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> Home</a>
+
+    <div class="signup-card">
+        <div class="brand-header">
+            <i class="fa-solid fa-shapes"></i>
+            <h1>Join HobiX</h1>
+            <p class="subtitle">Create your account & start exchanging skills worldwide!</p>
+        </div>
+
+        <div class="reward-banner">🎁 Get 50 FREE HX Points on registration!</div>
+
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <!-- Row 1: Name -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" id="firstName" class="input-box" placeholder="John" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" id="lastName" class="input-box" placeholder="Doe" required>
+                </div>
+            </div>
+
+            <!-- Row 2: User & Age -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" id="username" class="input-box" placeholder="@johndoe" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Age</label>
+                    <input type="number" id="age" class="input-box" placeholder="18" min="8" max="99" required>
+                </div>
+            </div>
+
+            <!-- Row 3: Country & Email -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Country</label>
+                    <input type="text" id="country" class="input-box" placeholder="e.g. Pakistan, USA" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" class="input-box" placeholder="your@email.com" required>
+                </div>
+            </div>
+
+            <!-- Row 4: Password & Teach Skill -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="input-box" placeholder="At least 6 characters" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🎯 Skill You Teach</label>
+                    <select id="skillTeach" class="select-box" onchange="toggleCustomSkill('teach')" required>
+                        <option value="">-- Select Skill --</option>
+                        <optgroup label="🎵 Music">
+                            <option value="Acoustic Guitar">🎸 Acoustic Guitar</option>
+                            <option value="Piano">🎹 Piano</option>
+                            <option value="Singing">🎤 Singing / Vocals</option>
+                        </optgroup>
+                        <optgroup label="💻 Tech">
+                            <option value="Python Coding">🐍 Python Coding</option>
+                            <option value="Web Development">🌐 Web Development</option>
+                            <option value="AI & ML">🤖 AI & Machine Learning</option>
+                        </optgroup>
+                        <optgroup label="⚽ Sports">
+                            <option value="Cricket">🏏 Cricket</option>
+                            <option value="Football">⚽ Football</option>
+                            <option value="Chess">♟️ Chess</option>
+                        </optgroup>
+                        <optgroup label="🎨 Art & Cooking">
+                            <option value="Painting">🎨 Painting</option>
+                            <option value="Cooking">🍳 Cooking</option>
+                        </optgroup>
+                        <option value="__OTHER__">✨ Other (Type my own skill)</option>
+                    </select>
+                    <input type="text" id="skillTeachCustom" class="input-box custom-skill-input" placeholder="Type teaching skill...">
+                </div>
+            </div>
+
+            <!-- Row 5: Learn Skill -->
+            <div class="form-group" style="margin-bottom: 5px;">
+                <label class="form-label">📚 Skill You Want to Learn</label>
+                <select id="skillLearn" class="select-box" onchange="toggleCustomSkill('learn')" required>
+                    <option value="">-- Select Skill --</option>
+                    <optgroup label="🎵 Music">
+                        <option value="Acoustic Guitar">🎸 Acoustic Guitar</option>
+                        <option value="Piano">🎹 Piano</option>
+                    </optgroup>
+                    <optgroup label="💻 Tech">
+                        <option value="Python Coding">🐍 Python Coding</option>
+                        <option value="Web Development">🌐 Web Development</option>
+                    </optgroup>
+                    <optgroup label="⚽ Sports">
+                        <option value="Cricket">🏏 Cricket</option>
+                        <option value="Football">⚽ Football</option>
+                    </optgroup>
+                    <optgroup label="🎨 Art & Cooking">
+                        <option value="Painting">🎨 Painting</option>
+                        <option value="Cooking">🍳 Cooking</option>
+                    </optgroup>
+                    <option value="__OTHER__">✨ Other (Type my own skill)</option>
+                </select>
+                <input type="text" id="skillLearnCustom" class="input-box custom-skill-input" placeholder="Type learning skill...">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-user-plus"></i> Create Account & Claim 50 HX
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <span style="font-size:0.82rem; color:var(--text-muted); display:block;">Already have an account?</span>
+            <a href="login.html" class="btn-login-link"><i class="fa-solid fa-right-to-bracket"></i> Click Here to Sign In / Login</a>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"><span id="toastMsg">Message</span></div>
+
+    <script>
+        function toggleCustomSkill(type) {
+            const selectEl = document.getElementById(type === 'teach' ? 'skillTeach' : 'skillLearn');
+            const customEl = document.getElementById(type === 'teach' ? 'skillTeachCustom' : 'skillLearnCustom');
+            
+            if (selectEl.value === '__OTHER__') {
+                customEl.classList.add('show');
+                customEl.required = true;
+                customEl.focus();
+            } else {
+                customEl.classList.remove('show');
+                customEl.required = false;
+                customEl.value = '';
+            }
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.className = 'toast show';
+            if (isError) toast.classList.add('error');
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+
+            let skillTeach = document.getElementById('skillTeach').value;
+            if (skillTeach === '__OTHER__') {
+                skillTeach = document.getElementById('skillTeachCustom').value.trim();
+                if (!skillTeach) { showToast('❌ Please type your custom teaching skill!', true); return; }
+            }
+
+            let skillLearn = document.getElementById('skillLearn').value;
+            if (skillLearn === '__OTHER__') {
+                skillLearn = document.getElementById('skillLearnCustom').value.trim();
+                if (!skillLearn) { showToast('❌ Please type your custom learning skill!', true); return; }
+            }
+
+            const username = document.getElementById('username').value.trim().replace('@', '');
+            const email = document.getElementById('email').value.trim().toLowerCase();
+
+            const db = JSON.parse(localStorage.getItem('hobix_global_users_db') || '[]');
+            if (db.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+                showToast('❌ Username already taken! Choose another.', true);
+                return;
+            }
+            if (db.find(u => u.email && u.email.toLowerCase() === email)) {
+                showToast('❌ Email already registered! Please login.', true);
+                return;
+            }
+
+            const newUser = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                username: username,
+                age: document.getElementById('age').value,
+                country: document.getElementById('country').value.trim(),
+                skillTeach: skillTeach,
+                skillLearn: skillLearn,
+                email: email,
+                password: document.getElementById('password').value,
+                points: 50,
+                bio: '',
+                photos: [],
+                notes: [],
+                avatarEmoji: '👤',
+                joinedDate: new Date().toLocaleDateString()
+            };
+
+            db.push(newUser);
+            localStorage.setItem('hobix_global_users_db', JSON.stringify(db));
+            localStorage.setItem('hobix_current_user', JSON.stringify(newUser));
+
+            showToast(`🎉 Welcome ${newUser.firstName}! 50 HX awarded! Redirecting...`);
+
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1200);
+        }
+    </script>
+</body>
+</html>

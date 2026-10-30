@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HobiX Global Exchange</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #00f2fe;
+            --bg-dark: #0a0a1f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #43e97b;
+            --yellow: #ffd93d;
+            --pink: #f5576c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); min-height: 100vh; display: flex; }
+
+        .sidebar {
+            width: 260px; background: rgba(15, 15, 35, 0.95);
+            border-right: 1px solid var(--card-border); padding: 30px 20px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            position: fixed; height: 100vh; z-index: 100;
+        }
+        .brand { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 14px 18px; color: var(--text-muted); text-decoration: none; border-radius: 12px; font-weight: 500; transition: all 0.3s ease; }
+        .nav-item:hover, .nav-item.active { background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)); color: #fff; border-left: 4px solid var(--accent); }
+        .nav-item i { font-size: 1.2rem; }
+
+        .main-content { margin-left: 260px; flex: 1; padding: 40px; max-width: 1200px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 35px; }
+        .welcome-text h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome-text p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .user-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 30px; display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; overflow: hidden; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 35px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+        .stat-icon { font-size: 2rem; color: var(--accent); margin-bottom: 15px; }
+        .stat-value { font-size: 2.2rem; font-weight: 800; color: #fff; }
+        .stat-label { color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        .btn-claim { background: linear-gradient(135deg, var(--accent), #4facfe); color: #000; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 10px; width: 100%; }
+        .btn-claim:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 242, 254, 0.4); }
+
+        .grid-2col { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 35px; }
+        @media (max-width: 900px) { .grid-2col { grid-template-columns: 1fr; } }
+
+        .panel-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; backdrop-filter: blur(10px); }
+        .panel-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; color: #fff; }
+        
+        /* Workshop Host Card */
+        .workshop-card { background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-left: 4px solid var(--success); border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .workshop-btn { background: var(--success); color: #000; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 0.85rem; }
+
+        /* Leaderboard */
+        .lb-list { display: flex; flex-direction: column; gap: 12px; }
+        .lb-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 14px; }
+        .lb-rank { font-weight: 800; width: 30px; color: var(--accent); }
+        .lb-user { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .lb-points { font-weight: 700; color: var(--yellow); }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="brand"><i class="fa-solid fa-shapes"></i> HobiX</div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="explore.html" class="nav-item"><i class="fa-solid fa-compass"></i> Explore People</a>
+                <a href="chatbot.html" class="nav-item"><i class="fa-solid fa-robot"></i> AI Assistant</a>
+                <a href="videocall.html" class="nav-item"><i class="fa-solid fa-video"></i> Video Studio</a>
+                <a href="profile.html" class="nav-item"><i class="fa-solid fa-user-gear"></i> My Profile</a>
+            </nav>
+        </div>
+        <div>
+            <a href="index.html" class="nav-item" onclick="localStorage.removeItem('hobix_current_user')"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="welcome-text">
+                <h1>Welcome back, <span id="dashName">User</span>! 👋</h1>
+                <p>Ready to exchange skills and teach someone worldwide today?</p>
+            </div>
+            <div class="user-pill">
+                <div class="user-avatar" id="dashAvatar">👤</div>
+                <div>
+                    <div style="font-weight: 700; font-size: 0.9rem;" id="dashHandle">@user</div>
+                    <div style="font-size: 0.75rem; color: var(--accent);" id="dashLevel">Level 1 Master</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+                <div class="stat-value" id="statPoints">0</div>
+                <div class="stat-label">HX Points Balance</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+                <div class="stat-value" id="statTeach">Hobby</div>
+                <div class="stat-label">Primary Skill Teaching</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fa-solid fa-gift"></i></div>
+                <div class="stat-label" style="margin-bottom: 5px;">Daily Skill Reward</div>
+                <button class="btn-claim" id="claimBonusBtn" onclick="claimBonus()">🎁 Claim +10 HX</button>
+            </div>
+        </div>
+
+        <div class="grid-2col">
+            <!-- Workshops Section -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <span><i class="fa-solid fa-calendar-star" style="color:var(--accent);"></i> Global Live Workshops</span>
+                    <button class="btn-claim" style="width:auto; padding:6px 14px; font-size:0.8rem; margin:0;" onclick="createWorkshop()">+ Host Workshop</button>
+                </div>
+                
+                <div id="workshopsList"></div>
+            </div>
+
+            <!-- Real Leaderboard -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <span><i class="fa-solid fa-trophy" style="color:var(--yellow);"></i> Global Rankings</span>
+                </div>
+                <div class="lb-list" id="leaderboardList"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const rawUser = localStorage.getItem('hobix_current_user');
+            if (!rawUser) { window.location.href = 'login.html'; return; }
+            currentUser = JSON.parse(rawUser);
+
+            renderDashboard();
+            renderWorkshops();
+            renderLeaderboard();
+        });
+
+        function playSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.2);
+            } catch(e){}
+        }
+
+        function renderDashboard() {
+            document.getElementById('dashName').textContent = currentUser.firstName || 'User';
+            document.getElementById('dashHandle').textContent = `@${currentUser.username || 'user'}`;
+            document.getElementById('statPoints').textContent = currentUser.points || 50;
+            document.getElementById('statTeach').textContent = currentUser.skillTeach || 'Teaching';
+
+            const av = document.getElementById('dashAvatar');
+            if (currentUser.avatarImage) av.innerHTML = `<img src="${currentUser.avatarImage}" style="width:100%; height:100%; object-fit:cover;">`;
+            else av.textContent = currentUser.avatarEmoji || '👤';
+
+            // Check bonus claim
+            const lastClaim = localStorage.getItem(`bonus_${currentUser.username}`);
+            const today = new Date().toDateString();
+            const btn = document.getElementById('claimBonusBtn');
+            if (lastClaim === today) {
+                btn.disabled = true; btn.textContent = '✅ Claimed Today'; btn.style.opacity = '0.6';
+            }
+        }
+
+        function claimBonus() {
+            currentUser.points = (currentUser.points || 50) + 10;
+            localStorage.setItem(`bonus_${currentUser.username}`, new Date().toDateString());
+            saveUserGlobal(); playSound();
+            alert('🎉 Claimed 10 HX Daily Skill Reward!');
+            renderDashboard(); renderLeaderboard();
+        }
+
+        function createWorkshop() {
+            const topic = prompt('Enter your workshop title (e.g. 30-Min Acoustic Guitar Practice):');
+            if (!topic) return;
+
+            const workshops = JSON.parse(localStorage.getItem('hobix_workshops') || '[]');
+            workshops.unshift({
+                id: Date.now(),
+                host: `${currentUser.firstName} (${currentUser.username})`,
+                topic: topic,
+                skill: currentUser.skillTeach || 'General',
+                room: `workshop_${Date.now()}`
+            });
+            localStorage.setItem('hobix_workshops', JSON.stringify(workshops));
+            playSound(); renderWorkshops();
+        }
+
+        function renderWorkshops() {
+            const container = document.getElementById('workshopsList');
+            const workshops = JSON.parse(localStorage.getItem('hobix_workshops') || '[]');
+
+            if (workshops.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.9rem; padding:20px; text-align:center;">No live workshops currently hosted. Click "+ Host Workshop" above!</div>`;
+                return;
+            }
+
+            container.innerHTML = workshops.slice(0, 5).map(w => `
+                <div class="workshop-card">
+                    <div>
+                        <div style="font-weight:700; color:#fff;">${escapeHtml(w.topic)}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">Host: @${escapeHtml(w.host)} • ${escapeHtml(w.skill)}</div>
+                    </div>
+                    <a href="videocall.html?room=${w.room}" class="workshop-btn"><i class="fa-solid fa-video"></i> Join Live</a>
+                </div>
+            `).join('');
+        }
+
+        function renderLeaderboard() {
+            const db = JSON.parse(localStorage.getItem('hobix_global_users_db') || '[]');
+            db.sort((a, b) => (b.points || 0) - (a.points || 0));
+
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = db.slice(0, 5).map((u, i) => `
+                <div class="lb-item">
+                    <div class="lb-rank">#${i + 1}</div>
+                    <div class="lb-user">
+                        <div style="font-weight:600;">${escapeHtml(u.firstName || '')} ${escapeHtml(u.lastName || '')}</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">@${escapeHtml(u.username)}</div>
+                    </div>
+                    <div class="lb-points">${u.points || 50} HX</div>
+                </div>
+            `).join('');
+        }
+
+        function saveUserGlobal() {
+            localStorage.setItem('hobix_current_user', JSON.stringify(currentUser));
+            const db = JSON.parse(localStorage.getItem('hobix_global_users_db') || '[]');
+            const idx = db.findIndex(u => u.username === currentUser.username);
+            if (idx !== -1) { db[idx] = currentUser; localStorage.setItem('hobix_global_users_db', JSON.stringify(db)); }
+        }
+
+        function escapeHtml(str) { return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+    </script>
+</body>
+</html>

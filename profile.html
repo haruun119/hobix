@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - HobiX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #00f2fe;
+            --bg-dark: #0a0a1f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #43e97b;
+            --yellow: #ffd93d;
+            --pink: #f5576c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); min-height: 100vh; display: flex; }
+
+        .sidebar {
+            width: 260px; background: rgba(15, 15, 35, 0.95);
+            border-right: 1px solid var(--card-border); padding: 30px 20px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            position: fixed; height: 100vh; z-index: 100;
+        }
+        .brand { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .nav-menu { display: flex; flex-direction: column; gap: 10px; }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 14px 18px; color: var(--text-muted); text-decoration: none; border-radius: 12px; font-weight: 500; transition: all 0.3s ease; }
+        .nav-item:hover, .nav-item.active { background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)); color: #fff; border-left: 4px solid var(--accent); }
+        .nav-item i { font-size: 1.2rem; }
+
+        .main-content { margin-left: 260px; flex: 1; padding: 40px; max-width: 1200px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-title { font-size: 2rem; font-weight: 800; }
+
+        /* Profile Banner & Header */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border);
+            border-radius: 24px; padding: 35px; backdrop-filter: blur(10px); margin-bottom: 30px;
+            position: relative; overflow: hidden;
+        }
+        .profile-header-flex { display: flex; gap: 30px; align-items: center; flex-wrap: wrap; }
+        .avatar-container { position: relative; width: 130px; height: 130px; }
+        .avatar-img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent); background: #1a1a3a; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; }
+        .avatar-upload-btn {
+            position: absolute; bottom: 0; right: 0; background: var(--accent); color: #000;
+            width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border: 2px solid var(--bg-dark); font-size: 1rem; transition: transform 0.2s;
+        }
+        .avatar-upload-btn:hover { transform: scale(1.1); }
+        #avatarInput { display: none; }
+
+        .profile-info { flex: 1; }
+        .profile-name { font-size: 2rem; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 12px; }
+        .country-flag { font-size: 1.3rem; opacity: 0.9; }
+        .profile-username { color: var(--accent); font-weight: 600; font-size: 1.1rem; margin-bottom: 15px; display: block; }
+        .profile-badges { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 15px; }
+        .badge { background: rgba(255, 255, 255, 0.08); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .badge.points { background: rgba(0, 242, 254, 0.15); color: var(--accent); border-color: var(--accent); }
+
+        /* Bio Editor */
+        .bio-box { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; margin-top: 20px; }
+        .bio-box h4 { font-size: 1rem; color: var(--accent); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .bio-textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; color: #fff; font-size: 0.95rem; resize: vertical; min-height: 80px; margin-bottom: 10px; }
+        .bio-textarea:focus { outline: none; border-color: var(--accent); }
+
+        .btn-sm { padding: 8px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; }
+        .btn-sm:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* Presets Avatar Selector */
+        .emoji-picker { margin-top: 15px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .emoji-btn { font-size: 1.5rem; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 50%; width: 45px; height: 45px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .emoji-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.15); }
+
+        /* Tabs Section */
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+
+        .section-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 20px; padding: 25px; }
+        .section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; color: var(--accent); }
+
+        /* Upload Skill Photo */
+        .upload-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 14px; border: 1px dashed var(--card-border); }
+        .input-field { background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 0.9rem; }
+        .input-field:focus { outline: none; border-color: var(--accent); }
+
+        /* Photo Gallery Grid */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .gallery-item { position: relative; border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); }
+        .gallery-item img { width: 100%; height: 140px; object-fit: cover; display: block; }
+        .gallery-caption { padding: 10px; font-size: 0.85rem; color: #ddd; background: rgba(10, 10, 31, 0.9); }
+        .delete-post-btn { position: absolute; top: 8px; right: 8px; background: rgba(245, 87, 108, 0.8); color: #fff; border: none; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; }
+        .delete-post-btn:hover { background: var(--pink); }
+
+        /* Notes Feed */
+        .notes-feed { display: flex; flex-direction: column; gap: 12px; }
+        .note-card { background: rgba(255,255,255,0.04); border-left: 4px solid var(--accent); padding: 14px; border-radius: 8px; position: relative; }
+        .note-text { font-size: 0.95rem; color: #fff; margin-bottom: 6px; white-space: pre-wrap; }
+        .note-date { font-size: 0.75rem; color: var(--text-muted); }
+
+        .empty-placeholder { text-align: center; color: var(--text-muted); padding: 30px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="brand"><i class="fa-solid fa-shapes"></i> HobiX</div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+                <a href="explore.html" class="nav-item"><i class="fa-solid fa-compass"></i> Explore People</a>
+                <a href="chatbot.html" class="nav-item"><i class="fa-solid fa-robot"></i> AI Assistant</a>
+                <a href="videocall.html" class="nav-item"><i class="fa-solid fa-video"></i> Video Studio</a>
+                <a href="profile.html" class="nav-item active"><i class="fa-solid fa-user-gear"></i> My Profile</a>
+            </nav>
+        </div>
+        <div>
+            <a href="index.html" class="nav-item" onclick="localStorage.removeItem('hobix_current_user')"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <h1 class="page-title">My Profile & Skill Portfolio</h1>
+        </div>
+
+        <!-- Main User Card -->
+        <div class="profile-card">
+            <div class="profile-header-flex">
+                <div class="avatar-container">
+                    <div class="avatar-img" id="avatarDisplay">👤</div>
+                    <label for="avatarInput" class="avatar-upload-btn" title="Upload Photo from Computer">
+                        <i class="fa-solid fa-camera"></i>
+                    </label>
+                    <input type="file" id="avatarInput" accept="image/*" onchange="handleAvatarUpload(event)">
+                </div>
+                
+                <div class="profile-info">
+                    <h2 class="profile-name"><span id="uFullName">User</span> <span class="country-flag" id="uCountryFlag">🌐</span></h2>
+                    <span class="profile-username" id="uUsername">@username</span>
+                    
+                    <div class="profile-badges">
+                        <span class="badge points"><i class="fa-solid fa-bolt"></i> <span id="uPoints">0</span> HX</span>
+                        <span class="badge"><i class="fa-solid fa-chalkboard-user"></i> Teaches: <span id="uTeach">Skill</span></span>
+                        <span class="badge"><i class="fa-solid fa-graduation-cap"></i> Learns: <span id="uLearn">Skill</span></span>
+                        <span class="badge"><i class="fa-solid fa-earth-americas"></i> <span id="uCountry">World</span></span>
+                    </div>
+
+                    <div class="emoji-picker">
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Quick Emoji Avatar:</span>
+                        <button class="emoji-btn" onclick="setAvatarEmoji('🎸')">🎸</button>
+                        <button class="emoji-btn" onclick="setAvatarEmoji('💻')">💻</button>
+                        <button class="emoji-btn" onclick="setAvatarEmoji('🎨')">🎨</button>
+                        <button class="emoji-btn" onclick="setAvatarEmoji('🍳')">🍳</button>
+                        <button class="emoji-btn" onclick="setAvatarEmoji('🚀')">🚀</button>
+                        <button class="emoji-btn" onclick="setAvatarEmoji('⚽')">⚽</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bio Section -->
+            <div class="bio-box">
+                <h4><i class="fa-solid fa-pen-to-square"></i> My Bio / Intro</h4>
+                <textarea id="bioInput" class="bio-textarea" placeholder="Tell the world what you teach, your hobbies, and what you're excited to learn..."></textarea>
+                <button class="btn-sm" onclick="saveBio()"><i class="fa-solid fa-floppy-disk"></i> Save Bio</button>
+            </div>
+        </div>
+
+        <!-- Two Columns: Skill Showcase Photos & Skill Notes -->
+        <div class="grid-layout">
+            
+            <!-- Skill Photos Section -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fa-solid fa-images"></i> Skill Showcase Photos</h3>
+                
+                <div class="upload-form">
+                    <label style="font-size: 0.85rem; color: var(--text-muted);"><i class="fa-solid fa-upload"></i> Share a photo of your skill practice or project:</label>
+                    <input type="file" id="skillPhotoInput" accept="image/*" class="input-field">
+                    <input type="text" id="skillPhotoCaption" placeholder="Caption (e.g., Practicing guitar solos today! 🎸)" class="input-field">
+                    <button class="btn-sm" onclick="uploadSkillPhoto()"><i class="fa-solid fa-share-nodes"></i> Post Skill Photo</button>
+                </div>
+
+                <div id="galleryContainer" class="gallery-grid">
+                    <!-- Dynamic Photos Load Here -->
+                </div>
+            </div>
+
+            <!-- Skill Notes Section -->
+            <div class="section-card">
+                <h3 class="section-title"><i class="fa-solid fa-note-sticky"></i> Skill Notes & Tips</h3>
+                
+                <div class="upload-form">
+                    <label style="font-size: 0.85rem; color: var(--text-muted);"><i class="fa-solid fa-pen"></i> Write a learning tip or note for others:</label>
+                    <textarea id="noteInput" class="input-field" style="min-height:70px;" placeholder="Share a useful tip (e.g., Python tip: use list comprehension for cleaner loops!)"></textarea>
+                    <button class="btn-sm" onclick="postNote()"><i class="fa-solid fa-paper-plane"></i> Post Note</button>
+                </div>
+
+                <div id="notesContainer" class="notes-feed">
+                    <!-- Dynamic Notes Load Here -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const rawUser = localStorage.getItem('hobix_current_user');
+            if (!rawUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            currentUser = JSON.parse(rawUser);
+
+            // Ensure arrays exist
+            if (!currentUser.photos) currentUser.photos = [];
+            if (!currentUser.notes) currentUser.notes = [];
+
+            renderProfile();
+        });
+
+        function renderProfile() {
+            document.getElementById('uFullName').textContent = `${currentUser.firstName || ''} ${currentUser.lastName || ''}`;
+            document.getElementById('uUsername').textContent = `@${currentUser.username || 'user'}`;
+            document.getElementById('uCountry').textContent = currentUser.country || 'Global';
+            document.getElementById('uCountryFlag').textContent = getCountryFlag(currentUser.country);
+            document.getElementById('uPoints').textContent = currentUser.points || 50;
+            document.getElementById('uTeach').textContent = currentUser.skillTeach || 'Teaching';
+            document.getElementById('uLearn').textContent = currentUser.skillLearn || 'Learning';
+            
+            document.getElementById('bioInput').value = currentUser.bio || '';
+
+            // Avatar Render
+            const avatarDisplay = document.getElementById('avatarDisplay');
+            if (currentUser.avatarImage) {
+                avatarDisplay.innerHTML = `<img src="${currentUser.avatarImage}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+            } else if (currentUser.avatarEmoji) {
+                avatarDisplay.textContent = currentUser.avatarEmoji;
+            } else {
+                avatarDisplay.textContent = '👤';
+            }
+
+            renderGallery();
+            renderNotes();
+        }
+
+        function saveBio() {
+            const bioText = document.getElementById('bioInput').value.trim();
+            currentUser.bio = bioText;
+            saveUserGlobal();
+            alert('✅ Bio saved successfully!');
+        }
+
+        function setAvatarEmoji(emoji) {
+            currentUser.avatarEmoji = emoji;
+            currentUser.avatarImage = null; // Clear image if emoji picked
+            saveUserGlobal();
+            renderProfile();
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentUser.avatarImage = e.target.result;
+                currentUser.avatarEmoji = null;
+                saveUserGlobal();
+                renderProfile();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function uploadSkillPhoto() {
+            const fileInput = document.getElementById('skillPhotoInput');
+            const captionInput = document.getElementById('skillPhotoCaption');
+            const file = fileInput.files[0];
+            const caption = captionInput.value.trim() || 'Skill Practice';
+
+            if (!file) {
+                alert('Please select an image file to upload.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const newPhoto = {
+                    id: Date.now(),
+                    url: e.target.result,
+                    caption: caption,
+                    date: new Date().toLocaleDateString()
+                };
+                if (!currentUser.photos) currentUser.photos = [];
+                currentUser.photos.unshift(newPhoto);
+                
+                saveUserGlobal();
+                renderGallery();
+                fileInput.value = '';
+                captionInput.value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function deletePhoto(id) {
+            currentUser.photos = currentUser.photos.filter(p => p.id !== id);
+            saveUserGlobal();
+            renderGallery();
+        }
+
+        function renderGallery() {
+            const container = document.getElementById('galleryContainer');
+            if (!currentUser.photos || currentUser.photos.length === 0) {
+                container.innerHTML = '<div class="empty-placeholder" style="grid-column: 1/-1;">No skill photos uploaded yet. Share your progress!</div>';
+                return;
+            }
+
+            container.innerHTML = currentUser.photos.map(p => `
+                <div class="gallery-item">
+                    <button class="delete-post-btn" onclick="deletePhoto(${p.id})" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                    <img src="${p.url}" alt="Skill Photo">
+                    <div class="gallery-caption">
+                        <div>${escapeHtml(p.caption)}</div>
+                        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">${p.date}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function postNote() {
+            const noteText = document.getElementById('noteInput').value.trim();
+            if (!noteText) {
+                alert('Please enter a note or tip.');
+                return;
+            }
+
+            const newNote = {
+                id: Date.now(),
+                text: noteText,
+                date: new Date().toLocaleDateString()
+            };
+
+            if (!currentUser.notes) currentUser.notes = [];
+            currentUser.notes.unshift(newNote);
+
+            saveUserGlobal();
+            renderNotes();
+            document.getElementById('noteInput').value = '';
+        }
+
+        function deleteNote(id) {
+            currentUser.notes = currentUser.notes.filter(n => n.id !== id);
+            saveUserGlobal();
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            if (!currentUser.notes || currentUser.notes.length === 0) {
+                container.innerHTML = '<div class="empty-placeholder">No notes shared yet. Write your first tip above!</div>';
+                return;
+            }
+
+            container.innerHTML = currentUser.notes.map(n => `
+                <div class="note-card">
+                    <button class="delete-post-btn" style="top:10px; right:10px;" onclick="deleteNote(${n.id})" title="Delete"><i class="fa-solid fa-xmark"></i></button>
+                    <div class="note-text">${escapeHtml(n.text)}</div>
+                    <div class="note-date"><i class="fa-regular fa-clock"></i> ${n.date}</div>
+                </div>
+            `).join('');
+        }
+
+        function saveUserGlobal() {
+            // 1. Update Current User
+            localStorage.setItem('hobix_current_user', JSON.stringify(currentUser));
+
+            // 2. Update Global Database Array
+            const db = JSON.parse(localStorage.getItem('hobix_global_users_db') || '[]');
+            const idx = db.findIndex(u => u.username === currentUser.username);
+            if (idx !== -1) {
+                db[idx] = currentUser;
+                localStorage.setItem('hobix_global_users_db', JSON.stringify(db));
+            }
+        }
+
+        function getCountryFlag(country) {
+            if (!country) return '🌐';
+            const c = country.toLowerCase();
+            if (c.includes('usa') || c.includes('states')) return '🇺🇸';
+            if (c.includes('russia')) return '🇷🇺';
+            if (c.includes('india')) return '🇮🇳';
+            if (c.includes('pakistan')) return '🇵🇰';
+            if (c.includes('uk') || c.includes('britain')) return '🇬🇧';
+            if (c.includes('canada')) return '🇨🇦';
+            if (c.includes('germany')) return '🇩🇪';
+            if (c.includes('japan')) return '🇯🇵';
+            return '🌐';
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
